@@ -1,6 +1,6 @@
 # Space Shooter Game
 
-![Shuttle Image](Data/Screenshot.png)
+![Shuttle Image](Data/logo.webp)
 
 
 

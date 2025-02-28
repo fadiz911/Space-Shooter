@@ -1,4 +1,4 @@
-# Space Shuttle vs Asteroids Game
+# Space Shooter Game
 
 ## Overview
 

@@ -43,11 +43,6 @@ This is a simple 2D space shooter game where the player controls a space shuttle
 - **Asteroid Spawn Rate**: Modify the interval in the `setInterval(createAsteroid, 1000)` function in `script.js` to change how often asteroids spawn.
 - **Bullet Speed**: Adjust the bullet movement speed by changing the value in the `bullet.style.bottom` update within the `shootBullet` function in `script.js`.
 
-## Future Improvements
-
-- **Power-ups**: Add power-ups that can enhance the shuttle's abilities, such as faster shooting or temporary invincibility.
-- **Levels**: Introduce different levels with increasing difficulty, such as faster asteroids or more asteroids at once.
-- **High Score System**: Implement a high score system to save and display the highest scores achieved.
 
 ## Credits
 

@@ -1,6 +1,8 @@
 # Space Shooter Game
 
-## Overview
+![Shuttle Image](Data/Screenshot.png)
+
+
 
 This is a simple 2D space shooter game where the player controls a space shuttle and shoots asteroids to score points. The game is built using HTML, CSS, and JavaScript. The objective is to survive as long as possible and achieve the highest score by destroying asteroids.
 

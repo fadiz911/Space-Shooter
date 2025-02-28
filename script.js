@@ -13,7 +13,14 @@ const gameState = {
   shuttleSpeed: 10,
   keysPressed: {},
   asteroidInterval: null,
-  currentShootSound: 0
+  currentShootSound: 0,
+  powerups: {
+    rapidFire: false,
+    shield: false,
+  },
+  powerupTimers: {},
+  asteroidSpeed: 5,
+  powerupSpeed: 5
 };
 
 // Audio pool for shooting sounds
@@ -28,7 +35,11 @@ function startGame() {
   Object.assign(gameState, {
     gameStarted: true,
     isGameOver: false,
-    score: 0
+    score: 0,
+    powerups: {
+      rapidFire: false,
+      shield: false,
+    }
   });
   
   scoreDisplay.textContent = `Score: ${gameState.score}`;
@@ -39,10 +50,11 @@ function startGame() {
   shuttle.style.left = `${(gameContainer.clientWidth - shuttle.clientWidth) / 2}px`;
 
   // Cleanup
-  document.querySelectorAll('.asteroid, .bullet').forEach(el => el.remove());
+  document.querySelectorAll('.asteroid, .bullet, .powerup').forEach(el => el.remove());
 
   // Start game loop
   gameState.asteroidInterval = setInterval(createAsteroid, 1000);
+  gameState.powerupInterval = setInterval(createPowerup, 10000);
   requestAnimationFrame(moveShuttle);
 }
 
@@ -100,7 +112,7 @@ function shootBullet() {
       return;
     }
     
-    bullet.style.bottom = `${bulletBottom + 5}px`;
+    bullet.style.bottom = `${bulletBottom + (gameState.powerups.rapidFire ? 8 : 5)}px`;
 
     // Collision detection
     const asteroids = document.querySelectorAll('.asteroid');
@@ -117,11 +129,11 @@ function shootBullet() {
       bullet.remove();
       clearInterval(bulletInterval);
     }
-  }, 20);
+  }, gameState.powerups.rapidFire ? 15 : 20);
 }
 
 function updateScore(asteroid) {
-  gameState.score++;
+  gameState.score += 1;
   scoreDisplay.textContent = `Score: ${gameState.score}`;
   
   const scorePopup = document.createElement('div');
@@ -129,12 +141,11 @@ function updateScore(asteroid) {
     position: 'absolute',
     left: asteroid.style.left,
     top: asteroid.style.top,
-    color: '#fff',
     fontSize: '24px',
     fontWeight: 'bold',
     textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
   });
-  scorePopup.textContent = '+1';
+  scorePopup.textContent =  '+1';
   gameContainer.appendChild(scorePopup);
 
   let opacity = 1;
@@ -153,27 +164,102 @@ function updateScore(asteroid) {
   }, 50);
 }
 
+function createPowerup() {
+  if (gameState.isGameOver) return;
+
+  const powerupTypes = ['rapidFire', 'shield'];
+  const type = powerupTypes[Math.floor(Math.random() * powerupTypes.length)];
+  
+  const powerup = document.createElement('div');
+  powerup.classList.add('powerup', type);
+  powerup.style.left = `${Math.random() * (gameContainer.clientWidth - 30)}px`;
+  powerup.style.top = '-30px'; // Start above the screen
+  gameContainer.appendChild(powerup);
+
+  let powerupTop = -30; // Initial position
+  const powerupInterval = setInterval(() => {
+    powerupTop += gameState.powerupSpeed;
+    powerup.style.top = `${powerupTop}px`;
+    
+    if (powerupTop > window.innerHeight) {
+      cleanup();
+      return;
+    }
+
+    if (checkCollision(powerup, shuttle)) {
+      activatePowerup(type);
+      cleanup();
+    }
+    
+    function cleanup() {
+      powerup.remove();
+      clearInterval(powerupInterval);
+    }
+  }, 50);
+}
+
+function activatePowerup(type) {
+  // Clear existing timer if any
+  if (gameState.powerupTimers[type]) {
+    clearTimeout(gameState.powerupTimers[type]);
+  }
+
+  gameState.powerups[type] = true;
+  
+  if (type === 'shield') {
+    shuttle.classList.add('shielded');
+  }
+
+  // Create powerup indicator
+  let indicator = document.getElementById(`${type}-indicator`);
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = `${type}-indicator`;
+    indicator.classList.add('powerup-indicator');
+    gameContainer.appendChild(indicator);
+  }
+  indicator.textContent = type.replace(/([A-Z])/g, ' $1').toLowerCase();
+  indicator.style.display = 'block';
+
+  // Set timer to deactivate
+  gameState.powerupTimers[type] = setTimeout(() => {
+    gameState.powerups[type] = false;
+    if (type === 'shield') {
+      shuttle.classList.remove('shielded');
+    }
+    indicator.style.display = 'none';
+  }, 10000);
+}
+
 function createAsteroid() {
   if (gameState.isGameOver) return;
 
   const asteroid = document.createElement('div');
   asteroid.classList.add('asteroid');
   asteroid.style.left = `${Math.random() * (gameContainer.clientWidth - 40)}px`;
-  asteroid.style.top = '0';
+  asteroid.style.top = '-40px'; // Start above the screen
   gameContainer.appendChild(asteroid);
 
+  let asteroidTop = -40; // Initial position
   const asteroidInterval = setInterval(() => {
-    const asteroidTop = parseInt(asteroid.style.top);
+    asteroidTop += gameState.asteroidSpeed;
+    asteroid.style.top = `${asteroidTop}px`;
     
     if (asteroidTop > window.innerHeight) {
       cleanup();
       return;
     }
-    
-    asteroid.style.top = `${asteroidTop + 5}px`;
 
     if (checkCollision(asteroid, shuttle)) {
-      gameOver();
+      if (gameState.powerups.shield) {
+        asteroid.remove();
+        gameState.powerups.shield = false;
+        shuttle.classList.remove('shielded');
+        const indicator = document.getElementById('shield-indicator');
+        if (indicator) indicator.style.display = 'none';
+      } else {
+        gameOver();
+      }
       cleanup();
     }
     
@@ -221,4 +307,13 @@ function gameOver() {
   finalScore.textContent = `Final Score: ${gameState.score}`;
   
   clearInterval(gameState.asteroidInterval);
+  clearInterval(gameState.powerupInterval);
+  
+  // Clear all powerup timers
+  Object.keys(gameState.powerupTimers).forEach(timer => {
+    clearTimeout(gameState.powerupTimers[timer]);
+  });
+  
+  // Remove powerup indicators
+  document.querySelectorAll('.powerup-indicator').forEach(el => el.remove());
 }

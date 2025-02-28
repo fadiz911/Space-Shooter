@@ -101,3 +101,41 @@ body {
 #start-button:hover {
   transform: scale(1.1);
 }
+
+
+/* Power-ups */
+.powerup {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-size: cover;
+  z-index: 2;
+  border: 2px solid red; /* Temporary border for debugging */
+}
+
+.powerup.rapidFire {
+  background-image: url('Data/rapidFire.webp');
+}
+
+.powerup.shield {
+  background-image: url('Data/shield.png');
+}
+
+/* Power-up Indicators */
+.powerup-indicator {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  display: none;
+  z-index: 3;
+}
+
+.shielded {
+  border: 3px solid cyan;
+  border-radius: 50%;
+}

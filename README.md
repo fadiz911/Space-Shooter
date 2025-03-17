@@ -15,7 +15,8 @@ This is a simple 2D space shooter game where the player controls a space shuttle
 - **Menu Screen**: Start the game from the menu screen and view your final score after the game ends.
 
 ## How to Play
-
+click on this link to play:
+[link](https://fadiz911.github.io/Space-Shooter/)
 1. **Start the Game**: Click the "Start" button on the menu screen to begin the game.
 2. **Move the Shuttle**: Use the left (`←`) and right (`→`) arrow keys to move the shuttle.
 3. **Shoot Asteroids**: Press the spacebar to shoot bullets and destroy asteroids.
@@ -33,11 +34,6 @@ This is a simple 2D space shooter game where the player controls a space shuttle
   - `shuttle.png`: The image of the space shuttle.
   - `asteroid.png`: The image of the asteroids.
   - `shoot.mp3`: The sound effect for shooting bullets.
-
-## Installation
-
-1. Clone the repository or download the project files.
-2. Open the `index.html` file in your web browser to start the game.
 
 ## Customization
 

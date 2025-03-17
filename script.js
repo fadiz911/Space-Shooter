@@ -20,7 +20,9 @@ const gameState = {
   },
   powerupTimers: {},
   asteroidSpeed: 5,
-  powerupSpeed: 5
+  powerupSpeed: 5,
+  touchStartX: null,
+  isTouching: false,
 };
 
 // Audio pool for shooting sounds
@@ -68,6 +70,44 @@ const handleKeyPress = (pressed) => (e) => {
 
 document.addEventListener('keydown', handleKeyPress(true));
 document.addEventListener('keyup', handleKeyPress(false));
+
+// Touch controls
+gameContainer.addEventListener('touchstart', (e) => {
+  if (!gameState.gameStarted || gameState.isGameOver) return;
+  e.preventDefault();
+  gameState.isTouching = true;
+  gameState.touchStartX = e.touches[0].clientX;
+});
+
+gameContainer.addEventListener('touchmove', (e) => {
+  if (!gameState.gameStarted || gameState.isGameOver || !gameState.isTouching) return;
+  e.preventDefault();
+  
+  const touch = e.touches[0];
+  const deltaX = touch.clientX - gameState.touchStartX;
+  const currentLeft = parseInt(window.getComputedStyle(shuttle).left);
+  const newPosition = Math.max(0, Math.min(currentLeft + deltaX, gameContainer.clientWidth - shuttle.clientWidth));
+  
+  shuttle.style.left = `${newPosition}px`;
+  gameState.touchStartX = touch.clientX;
+});
+
+gameContainer.addEventListener('touchend', () => {
+  gameState.isTouching = false;
+});
+
+// Add touch shoot button
+const shootButton = document.createElement('button');
+shootButton.id = 'shoot-button';
+shootButton.textContent = '🔫';
+gameContainer.appendChild(shootButton);
+
+shootButton.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  if (gameState.gameStarted && !gameState.isGameOver) {
+    shootBullet();
+  }
+});
 
 function moveShuttle() {
   if (!gameState.gameStarted || gameState.isGameOver) return;

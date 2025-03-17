@@ -15,6 +15,10 @@ body {
   align-items: center;
   background: url('Data/background.png') no-repeat center center/cover;
   overflow: hidden;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #shuttle {
@@ -138,4 +142,32 @@ body {
 .shielded {
   border: 3px solid cyan;
   border-radius: 50%;
+}
+
+#shoot-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid white;
+  border-radius: 50%;
+  color: white;
+  font-size: 24px;
+  display: none;
+  z-index: 1000;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Show shoot button only on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  #shoot-button {
+    display: block;
+  }
+  
+  #shuttle {
+    bottom: 100px; /* Move shuttle up to make room for the shoot button */
+  }
 }
